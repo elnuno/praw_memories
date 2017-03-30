@@ -1,0 +1,14 @@
+betamax>=0.8.0
+betamax-matchers>=0.4.0
+betamax-serializers>=0.2.0
+CacheControl>=0.12.0
+lockfile>=0.12.2
+msgpack-python>=0.4.8
+praw>=4.4.0
+prawcore>=0.9.0
+requests>=2.13.0
+requests-toolbelt>=0.7.1
+SQLAlchemy>=1.1.6
+SQLAlchemy-Utils>=0.32.12
+tablib>=0.11.4
+update-checker>=0.16
