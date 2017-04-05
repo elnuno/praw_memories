@@ -1,4 +1,4 @@
-"""Debbuging facilities for PRAW-based projects."""
+"""Debugging facilities for PRAW-based projects."""
 
 import datetime
 import json

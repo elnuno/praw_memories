@@ -1,5 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 
+.cache.sqlite
+.praw_cache
+.praw_cassettes
+
 # IntelliJ project files
 .idea
 
