@@ -21,7 +21,10 @@ class ModernCachingReddit(praw.Reddit):
                  **config_settings):
         if not requestor_kwargs:
             requestor_kwargs = {}
-        requestor_kwargs['session'] = caching_session
+            requestor_kwargs['session'] = caching_session
+        elif requestor_kwargs.get('session') and caching_session:
+            raise ValueError('Cannot pass session both as caching_session '
+                                    'and requestor_kwargs["session"].')
         super().__init__(site_name, requestor_class, requestor_kwargs,
                          **config_settings)
 

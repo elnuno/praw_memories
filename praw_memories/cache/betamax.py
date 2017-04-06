@@ -1,6 +1,7 @@
 import json
 import os.path
 from base64 import b64encode
+import string
 
 import betamax
 import betamax.cassette.cassette
@@ -12,7 +13,8 @@ from prawcore.const import TIMEOUT
 
 betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
 
-CLEAN_TABLE = str.maketrans(r' /\,+@#$', '_' * 8, '!|;:?=%*&~')
+ACCEPTABLE = set(string.digits + string.ascii_letters + '_-')
+CLEAN_TABLE = str.maketrans(r' /\,+@#$.', '_' * 9)
 
 
 def b64_string(input_string):
@@ -23,17 +25,22 @@ def b64_string(input_string):
 class CassetteRequestor(prawcore.Requestor):
     def __init__(self, user_agent, oauth_url='https://oauth.reddit.com',
                  reddit_url='https://www.reddit.com', session=None,
-                 cacheable_methods=None, wrapper=None):
+                 cacheable_methods=None, wrapper=None, **betamaxkwargs):
         super().__init__(user_agent, oauth_url, reddit_url, session)
         self.cacheable_methods = cacheable_methods or {'GET'}
-        self.betamax = wrapper or get_betamax_cache(self._http)
+        self.betamax = wrapper or get_betamax_cache(self._http, **betamaxkwargs)
+
+    @staticmethod
+    def get_cassette_name_from_url(url):
+        oauth = 'https://oauth.reddit.com/'
+        cassette_name = url.replace(oauth, '').translate(CLEAN_TABLE)
+        cassette_name = ''.join(c for c in cassette_name if c in ACCEPTABLE)
+        return cassette_name
 
     def request(self, *args, **kwargs):
-        oauth = 'https://oauth.reddit.com/'
         try:
             if args[0] in self.cacheable_methods:
-                cassette_name = args[1].replace(oauth, '').translate(
-                    CLEAN_TABLE)
+                cassette_name = self.get_cassette_name_from_url(args[1])
                 with self.betamax.use_cassette(cassette_name):
                     response = self._http.request(*args, timeout=TIMEOUT,
                                                   **kwargs)
